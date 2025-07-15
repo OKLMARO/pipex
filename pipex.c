@@ -6,13 +6,13 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:21:41 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/12 17:23:44 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/07/15 19:04:51 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv, char **env)
 {
 	pid_t	fils;
 	int		pip[2];
@@ -20,19 +20,32 @@ int	main(int argc, char **argv)
 	int		file_out;
 	char	**cmd;
 	char	*all_cmd;
+	char	**path;
+	int		i;
 
 	if (argc != 5)
 	{
 		perror("Incorrect number of arguments !");
 		exit(2);
 	}
+	i = 0;
+	while (env[i])
+	{
+		if (ft_strncmp("PATH=", env[i], 5) == 0)
+		{
+			path = ft_split(env[i] + 5, ':');
+			break ;
+		}
+		i++;
+	}
 	pipe(pip);
 	file_in = open(argv[1], O_RDONLY);
 	if (!file_in)
 		perror("Error open file_in");
-	file_out = open(argv[4], O_WRONLY);
+	file_out = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0777);
 	if (!file_out)
 		perror("Error open file_out");
+	// il faut gerer le fait que la commande soit dans le path ou non
 	cmd = ft_split(argv[2], ' ');
 	all_cmd = ft_strjoin("/bin/", cmd[0]);
 	fils = fork();
