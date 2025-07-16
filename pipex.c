@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:21:41 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/15 19:04:51 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/07/15 22:40:07 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,30 @@ int	main(int argc, char **argv, char **env)
 	file_in = open(argv[1], O_RDONLY);
 	if (!file_in)
 		perror("Error open file_in");
-	file_out = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0777);
-	if (!file_out)
-		perror("Error open file_out");
 	// il faut gerer le fait que la commande soit dans le path ou non
 	cmd = ft_split(argv[2], ' ');
 	all_cmd = ft_strjoin("/bin/", cmd[0]);
+	i = 0;
+	int flag = 0;
+	while (path[i])
+	{
+		char *temp = ft_strjoin(path[i], cmd[0]);
+		if (access(temp, F_OK) == 0)
+		{
+			flag = 1;
+			break ;
+		}
+		i++;
+		free(temp);
+	}
+	if (flag == 0)
+	{
+		perror("Commande introuvable ou non executable");
+		return (1);
+	}
+	file_out = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0777);
+	if (!file_out)
+		perror("Error open file_out");
 	fils = fork();
 	if (fils == 0)
 	{
