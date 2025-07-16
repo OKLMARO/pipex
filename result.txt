@@ -1,1 +1,9 @@
-8
+Makefile
+a.out
+entry.txt
+ft_printf
+libft
+pipex
+pipex.c
+pipex.h
+result.txt
