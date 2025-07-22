@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:21:41 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/16 15:55:37 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/07/22 18:11:13 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,22 +54,22 @@ char	*valid_command(char *cmd, char **path)
 	return (NULL);
 }
 
-void	first(int file_in, int pip[2], char *all_cmd, char **cmd)
+void	first(int file_in, int pip[2], char *all_cmd, char **cmd, char **env)
 {
 	dup2(file_in, 0);
 	dup2(pip[1], 1);
 	close(file_in);
 	close(pip[1]);
-	execve(all_cmd, cmd, NULL);
+	execve(all_cmd, cmd, env);
 }
 
-void	second(int file_out, int pip[2], char *all_cmd, char **cmd)
+void	second(int file_out, int pip[2], char *all_cmd, char **cmd, char **env)
 {
 	dup2(file_out, 1);
 	dup2(pip[0], 0);
 	close(file_out);
 	close(pip[0]);
-	execve(all_cmd, cmd, NULL);
+	execve(all_cmd, cmd, env);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -105,7 +105,7 @@ int	main(int argc, char **argv, char **env)
 	fils = fork();
 	if (fils == 0)
 	{
-		first(file_in, pip, all_cmd, cmd);
+		first(file_in, pip, all_cmd, cmd, env);
 		return (perror("Erreur d'execution 1er fonction"), 1);
 	}
 	waitpid(fils, NULL, 0);
@@ -114,9 +114,6 @@ int	main(int argc, char **argv, char **env)
 	all_cmd = valid_command(cmd[0], path);
 	if (!all_cmd)
 		return (perror("Commande introuvable ou non executable"), 1);
-	fils = fork();
-	if (fils == 0)
-		second(file_out, pip, all_cmd, cmd);
-	ft_printf("jrv ici ?");
-	return (waitpid(fils, NULL, 0), 0);
+	second(file_out, pip, all_cmd, cmd, env);
+	return (0);
 }

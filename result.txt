@@ -1,9 +1,10 @@
-Makefile
 a.out
 entry.txt
 ft_printf
 libft
+Makefile
 pipex
 pipex.c
 pipex.h
+pipex.o
 result.txt
