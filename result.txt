@@ -1,10 +1,11 @@
-a.out
-entry.txt
-ft_printf
-libft
-Makefile
-pipex
-pipex.c
-pipex.h
-pipex.o
-result.txt
+total 376
+-rw-rw-rw-  1 codespace root        1396 Jul 23 10:07 Makefile
+-rwxrwxrwx  1 codespace root      105136 Jul 23 10:07 a.out
+-rw-rw-rw-  1 codespace root          47 Jul 23 10:07 entry.txt
+drwxrwxrwx+ 2 codespace root        4096 Jul 23 10:24 ft_printf
+drwxrwxrwx+ 2 codespace root        4096 Jul 23 10:24 libft
+-rwxrwxrwx  1 codespace codespace  92816 Jul 23 10:24 pipex
+-rw-rw-rw-  1 codespace root        3019 Jul 23 10:24 pipex.c
+-rw-rw-rw-  1 codespace root        1119 Jul 23 10:07 pipex.h
+-rw-rw-rw-  1 codespace codespace 157176 Jul 23 10:24 pipex.o
+-rw-rw-rw-  1 codespace root           0 Jul 23 10:24 result.txt

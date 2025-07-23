@@ -12,6 +12,19 @@
 
 #include "pipex.h"
 
+void	free_double(char **tab_str)
+{
+	int	i;
+
+	i = 0;
+	while (tab_str[i])
+	{
+		free(tab_str[i]);
+		i++;
+	}
+	free(tab_str);
+}
+
 char	**get_path(char **env)
 {
 	int		i;
@@ -54,30 +67,57 @@ char	*valid_command(char *cmd, char **path)
 	return (NULL);
 }
 
-void	first(int file_in, int pip[2], char *all_cmd, char **cmd, char **env)
+void	first(char *file_in, int pip[2], char *all_cmd, char **cmd, char **env)
 {
-	dup2(file_in, 0);
-	dup2(pip[1], 1);
-	close(file_in);
+	pid_t	fils;
+	int		file;
+
+	file = open(file_in, O_RDONLY);
+	if (!file)
+		return (perror("Fichier de lecture manquant"));
+	fils = fork();
+	if (fils == 0)
+	{
+		if(dup2(file, 0) == -1)
+			return (perror("Erreur dans le dup2"));
+		if(dup2(pip[1], 1) == -1)
+			return (perror("Erreur dans le dup2"));
+		execve(all_cmd, cmd, env);
+	}
+	waitpid(fils, NULL, 0);
+	close(file);
 	close(pip[1]);
-	execve(all_cmd, cmd, env);
+	free(all_cmd);
+	free_double(cmd);
 }
 
-void	second(int file_out, int pip[2], char *all_cmd, char **cmd, char **env)
+void	second(char *file_out, int pip[2], char *all_cmd, char **cmd, char **env)
 {
-	dup2(file_out, 1);
-	dup2(pip[0], 0);
-	close(file_out);
+	pid_t	fils;
+	int		file;
+
+	file = open(file_out, O_WRONLY | O_TRUNC | O_CREAT, 0777);
+	if (!file)
+		return (perror("Probleme lors de l'ouverture du fichier de sortie"));
+	fils = fork();
+	if (fils == 0)
+	{
+		if(dup2(file, 1) == -1)
+			return (perror("Erreur dans le dup2"));
+		if(dup2(pip[0], 0) == -1)
+			return (perror("Erreur dans le dup2"));
+		execve(all_cmd, cmd, env);
+	}
+	waitpid(fils, NULL, 0);
+	close(file);
 	close(pip[0]);
-	execve(all_cmd, cmd, env);
+	free(all_cmd);
+	free_double(cmd);
 }
 
 int	main(int argc, char **argv, char **env)
 {
-	pid_t	fils;
 	int		pip[2];
-	int		file_in;
-	int		file_out;
 	char	**cmd;
 	char	*all_cmd;
 	char	**path;
@@ -89,9 +129,6 @@ int	main(int argc, char **argv, char **env)
 	}
 	path = get_path(env);
 	pipe(pip);
-	file_in = open(argv[1], O_RDONLY);
-	if (!file_in)
-		return (perror("Premier fichier non ouvrable"), 1);
 	cmd = ft_split(argv[2], ' ');
 	all_cmd = valid_command(cmd[0], path);
 	if (!all_cmd)
@@ -99,21 +136,10 @@ int	main(int argc, char **argv, char **env)
 		ft_printf("all cmd : %s\n", all_cmd);
 		return (perror("Commande introuvable ou non executable"), 1);
 	}
-	file_out = open(argv[4], O_WRONLY | O_TRUNC | O_CREAT, 0777);
-	if (!file_out)
-		perror("Error open file_out");
-	fils = fork();
-	if (fils == 0)
-	{
-		first(file_in, pip, all_cmd, cmd, env);
-		return (perror("Erreur d'execution 1er fonction"), 1);
-	}
-	waitpid(fils, NULL, 0);
-	// peut free cmd et all_cmd
+	first(argv[1], pip, all_cmd, cmd, env);
 	cmd = ft_split(argv[3], ' ');
 	all_cmd = valid_command(cmd[0], path);
 	if (!all_cmd)
 		return (perror("Commande introuvable ou non executable"), 1);
-	second(file_out, pip, all_cmd, cmd, env);
-	return (0);
+	return (second(argv[4], pip, all_cmd, cmd, env), 0);
 }
