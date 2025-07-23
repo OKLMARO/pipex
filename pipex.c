@@ -74,14 +74,14 @@ void	first(char *file_in, int pip[2], char *all_cmd, char **cmd, char **env)
 
 	file = open(file_in, O_RDONLY);
 	if (!file)
-		return (perror("Fichier de lecture manquant"));
+		return (free(all_cmd), free_double(cmd), perror("Fichier de lecture manquant"));
 	fils = fork();
 	if (fils == 0)
 	{
 		if(dup2(file, 0) == -1)
-			return (perror("Erreur dans le dup2"));
+			return (free(all_cmd), free_double(cmd), perror("Erreur dans le dup2"), exit(2));
 		if(dup2(pip[1], 1) == -1)
-			return (perror("Erreur dans le dup2"));
+			return (free(all_cmd), free_double(cmd), perror("Erreur dans le dup2"), exit(2));
 		execve(all_cmd, cmd, env);
 	}
 	waitpid(fils, NULL, 0);
@@ -98,14 +98,14 @@ void	second(char *file_out, int pip[2], char *all_cmd, char **cmd, char **env)
 
 	file = open(file_out, O_WRONLY | O_TRUNC | O_CREAT, 0777);
 	if (!file)
-		return (perror("Probleme lors de l'ouverture du fichier de sortie"));
+		return (free(all_cmd), free_double(cmd), perror("Probleme lors de l'ouverture du fichier de sortie"), exit(2));
 	fils = fork();
 	if (fils == 0)
 	{
 		if(dup2(file, 1) == -1)
-			return (perror("Erreur dans le dup2"));
+			return (free(all_cmd), free_double(cmd), perror("Erreur dans le dup2"), exit(2));
 		if(dup2(pip[0], 0) == -1)
-			return (perror("Erreur dans le dup2"));
+			return (free(all_cmd), free_double(cmd), perror("Erreur dans le dup2"), exit(2));
 		execve(all_cmd, cmd, env);
 	}
 	waitpid(fils, NULL, 0);
@@ -123,23 +123,21 @@ int	main(int argc, char **argv, char **env)
 	char	**path;
 
 	if (argc != 5)
-	{
-		perror("Incorrect number of arguments !");
-		exit(2);
-	}
+		return	(perror("Incorrect number of arguments !"), exit(2), 0);
 	path = get_path(env);
 	pipe(pip);
 	cmd = ft_split(argv[2], ' ');
+	if (!cmd)
+		return (perror("Malloc crash"), exit(2), 0);
 	all_cmd = valid_command(cmd[0], path);
 	if (!all_cmd)
-	{
-		ft_printf("all cmd : %s\n", all_cmd);
-		return (perror("Commande introuvable ou non executable"), 1);
-	}
+		return (free_double(cmd), perror("Commande introuvable ou non executable"), exit(2), 0);
 	first(argv[1], pip, all_cmd, cmd, env);
 	cmd = ft_split(argv[3], ' ');
+	if (!cmd)
+		return (perror("Malloc crash"), 1);
 	all_cmd = valid_command(cmd[0], path);
 	if (!all_cmd)
-		return (perror("Commande introuvable ou non executable"), 1);
+		return (free_double(cmd), perror("Commande introuvable ou non executable"), exit(2), 0);
 	return (second(argv[4], pip, all_cmd, cmd, env), 0);
 }
