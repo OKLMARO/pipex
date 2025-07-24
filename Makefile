@@ -6,11 +6,11 @@
 #    By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/16 15:03:27 by oamairi           #+#    #+#              #
-#    Updated: 2025/07/22 17:34:56 by oamairi          ###   ########.fr        #
+#    Updated: 2025/07/24 14:50:19 by oamairi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS =		pipex.c
+SRCS =		pipex.c pipex_utils.c
 
 OBJS =		$(SRCS:.c=.o)
 

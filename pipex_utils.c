@@ -6,9 +6,11 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 13:22:49 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/24 13:22:50 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/07/24 14:49:50 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "pipex.h"
 
 void	free_double(char **tab_str)
 {

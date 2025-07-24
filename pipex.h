@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:28:14 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/12 13:38:35 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/07/24 14:49:40 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,7 @@
 # include	<string.h>
 # include	<stdio.h>
 # include	<fcntl.h>
+
+void	free_double(char **tab_str);
 
 #endif
