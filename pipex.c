@@ -69,8 +69,12 @@ int	first(char *file_in, int pip[2], char *all_cmd, char **cmd)
 		if (dup2(file, 0) == -1 || dup2(pip[1], 1) == -1)
 			return (perror("Erreur dans le dup2"), 2);
 		execve(all_cmd, cmd, NULL);
-		close(file);
-		return (2);
+		perror("Erreur dans l'execution");
+        close(file);
+        close(pip[1]);
+        free(all_cmd);
+        free_double(cmd);
+        exit(2);
 	}
 	waitpid(fils, NULL, 0);
 	close(file);
@@ -92,13 +96,29 @@ int	second(char *file_out, int pip[2], char *all_cmd, char **cmd)
 		if (dup2(file, 1) == -1 || dup2(pip[0], 0) == -1)
 			return (perror("Erreur dans le dup2"), 2);
 		execve(all_cmd, cmd, NULL);
-		return (2);
+		perror("Erreur dans l'execution");
+        close(file);
+        close(pip[1]);
+        free(all_cmd);
+        free_double(cmd);
+        exit(2);
 	}
 	waitpid(fils, NULL, 0);
 	close(file);
 	close(pip[0]);
 	return (1);
 }
+
+/*int	make_storage(char **cmd, char *argv, char *all_cmd, char **path)
+{
+	cmd = ft_split(argv, ' ');
+	if (!cmd)
+		return (perror("Malloc crash"), 0);
+	all_cmd = valid_command(cmd[0], path);
+	if (!all_cmd)
+		return (free_double(cmd), perror("Commande introuvable ou non executable"), 0);
+	return (1);
+}*/
 
 int	main(int argc, char **argv, char **env)
 {
@@ -108,28 +128,35 @@ int	main(int argc, char **argv, char **env)
 	char	**path;
 
 	if (argc != 5)
-		return (perror("Incorrect number of arguments !"), exit(2), 0);
+		return (perror("Nombre d'argument incorrect !"), 2);
 	path = get_path(env);
 	if (!path)
-		return (perror("Error path"), 2);
+		return (perror("Erreur path"), 2);
 	pipe(pip);
+	cmd = NULL;
+	all_cmd = NULL;
+	/*if (make_storage(cmd, argv[2], all_cmd, path) == 0)
+		return (free_double(path), 2);*/
 	cmd = ft_split(argv[2], ' ');
 	if (!cmd)
-		return (perror("Malloc crash"), free_double(path), 2);
+		return (perror("Malloc crash"), 0);
 	all_cmd = valid_command(cmd[0], path);
 	if (!all_cmd)
-		return (free_double(cmd), free_double(path),
-			perror("Commande introuvable ou non executable"), 2);
+		return (free_double(cmd), perror("Commande introuvable ou non executable"), 0);
 	if (first(argv[1], pip, all_cmd, cmd) == 2)
 		return (free_double(path), free_double(cmd), free(all_cmd), 2);
+	(free_double(cmd), free(all_cmd));
+	cmd = NULL;
+	all_cmd = NULL;
+	/*if (make_storage(cmd, argv[3], all_cmd, path) == 0)
+		return (free_double(path), 2);*/
 	cmd = ft_split(argv[3], ' ');
 	if (!cmd)
-		return (perror("Malloc crash"), free_double(path), 2);
+		return (perror("Malloc crash"), 0);
 	all_cmd = valid_command(cmd[0], path);
 	if (!all_cmd)
-		return (free_double(cmd), free_double(path),
-			perror("Commande introuvable ou non executable"), 2);
+		return (free_double(cmd), perror("Commande introuvable ou non executable"), 0);
 	if (second(argv[4], pip, all_cmd, cmd) == 2)
 		return (free_double(path), free_double(cmd), free(all_cmd), 2);
-	return (0);
+	return (free_double(cmd), free_double(path), free(all_cmd), 0);
 }
