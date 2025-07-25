@@ -109,16 +109,16 @@ int	second(char *file_out, int pip[2], char *all_cmd, char **cmd)
 	return (1);
 }
 
-/*int	make_storage(char **cmd, char *argv, char *all_cmd, char **path)
+int	make_storage(char ***cmd, char *argv, char **all_cmd, char **path)
 {
-	cmd = ft_split(argv, ' ');
-	if (!cmd)
+	*cmd = ft_split(argv, ' ');
+	if (!*cmd)
 		return (perror("Malloc crash"), 0);
-	all_cmd = valid_command(cmd[0], path);
-	if (!all_cmd)
-		return (free_double(cmd), perror("Commande introuvable ou non executable"), 0);
+	*all_cmd = valid_command(*cmd[0], path);
+	if (!*all_cmd)
+		return (free_double(*cmd), perror("Commande introuvable ou non executable"), 0);
 	return (1);
-}*/
+}
 
 int	main(int argc, char **argv, char **env)
 {
@@ -133,9 +133,9 @@ int	main(int argc, char **argv, char **env)
 	if (!path)
 		return (perror("Erreur path"), 2);
 	pipe(pip);
-	cmd = NULL;
+	/*cmd = NULL;
 	all_cmd = NULL;
-	/*if (make_storage(cmd, argv[2], all_cmd, path) == 0)
+	if (make_storage(&cmd, argv[2], &all_cmd, path) == 0)
 		return (free_double(path), 2);*/
 	cmd = ft_split(argv[2], ' ');
 	if (!cmd)
@@ -146,9 +146,9 @@ int	main(int argc, char **argv, char **env)
 	if (first(argv[1], pip, all_cmd, cmd) == 2)
 		return (free_double(path), free_double(cmd), free(all_cmd), 2);
 	(free_double(cmd), free(all_cmd));
-	cmd = NULL;
+	/*cmd = NULL;
 	all_cmd = NULL;
-	/*if (make_storage(cmd, argv[3], all_cmd, path) == 0)
+	if (make_storage(&cmd, argv[3], &all_cmd, path) == 0)
 		return (free_double(path), 2);*/
 	cmd = ft_split(argv[3], ' ');
 	if (!cmd)
