@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:28:14 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/24 14:49:40 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/07/26 17:27:32 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,6 @@
 # include	<fcntl.h>
 
 void	free_double(char **tab_str);
+int		make_storage(char ***cmd, char *argv, char **all_cmd, char **path);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:21:41 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/24 15:58:27 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/07/26 17:28:19 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ char	*valid_command(char *cmd, char **path)
 	return (free(valid_cmd), NULL);
 }
 
-int	first(char *file_in, int pip[2], char *all_cmd, char **cmd)
+int	first(char *file_in, int pip[2], char *all_cmd, char **cmd, char **path)
 {
 	pid_t	fils;
 	int		file;
@@ -70,11 +70,12 @@ int	first(char *file_in, int pip[2], char *all_cmd, char **cmd)
 			return (perror("Erreur dans le dup2"), 2);
 		execve(all_cmd, cmd, NULL);
 		perror("Erreur dans l'execution");
-        close(file);
-        close(pip[1]);
-        free(all_cmd);
-        free_double(cmd);
-        exit(2);
+		close(file);
+		close(pip[1]);
+		free(all_cmd);
+		free_double(cmd);
+		free_double(path);
+		exit(2);
 	}
 	waitpid(fils, NULL, 0);
 	close(file);
@@ -82,7 +83,7 @@ int	first(char *file_in, int pip[2], char *all_cmd, char **cmd)
 	return (1);
 }
 
-int	second(char *file_out, int pip[2], char *all_cmd, char **cmd)
+int	second(char *file_out, int pip[2], char *all_cmd, char **cmd, char **path)
 {
 	pid_t	fils;
 	int		file;
@@ -97,26 +98,16 @@ int	second(char *file_out, int pip[2], char *all_cmd, char **cmd)
 			return (perror("Erreur dans le dup2"), 2);
 		execve(all_cmd, cmd, NULL);
 		perror("Erreur dans l'execution");
-        close(file);
-        close(pip[1]);
-        free(all_cmd);
-        free_double(cmd);
-        exit(2);
+		close(file);
+		close(pip[0]);
+		free(all_cmd);
+		free_double(cmd);
+		free_double(path);
+		exit(2);
 	}
 	waitpid(fils, NULL, 0);
 	close(file);
 	close(pip[0]);
-	return (1);
-}
-
-int	make_storage(char ***cmd, char *argv, char **all_cmd, char **path)
-{
-	*cmd = ft_split(argv, ' ');
-	if (!*cmd)
-		return (perror("Malloc crash"), 0);
-	*all_cmd = valid_command(*cmd[0], path);
-	if (!*all_cmd)
-		return (free_double(*cmd), perror("Commande introuvable ou non executable"), 0);
 	return (1);
 }
 
@@ -133,30 +124,18 @@ int	main(int argc, char **argv, char **env)
 	if (!path)
 		return (perror("Erreur path"), 2);
 	pipe(pip);
-	/*cmd = NULL;
+	cmd = NULL;
 	all_cmd = NULL;
 	if (make_storage(&cmd, argv[2], &all_cmd, path) == 0)
-		return (free_double(path), 2);*/
-	cmd = ft_split(argv[2], ' ');
-	if (!cmd)
-		return (perror("Malloc crash"), 0);
-	all_cmd = valid_command(cmd[0], path);
-	if (!all_cmd)
-		return (free_double(cmd), perror("Commande introuvable ou non executable"), 0);
-	if (first(argv[1], pip, all_cmd, cmd) == 2)
+		return (free_double(path), 2);
+	if (first(argv[1], pip, all_cmd, cmd, path) == 2)
 		return (free_double(path), free_double(cmd), free(all_cmd), 2);
 	(free_double(cmd), free(all_cmd));
-	/*cmd = NULL;
+	cmd = NULL;
 	all_cmd = NULL;
 	if (make_storage(&cmd, argv[3], &all_cmd, path) == 0)
-		return (free_double(path), 2);*/
-	cmd = ft_split(argv[3], ' ');
-	if (!cmd)
-		return (perror("Malloc crash"), 0);
-	all_cmd = valid_command(cmd[0], path);
-	if (!all_cmd)
-		return (free_double(cmd), perror("Commande introuvable ou non executable"), 0);
-	if (second(argv[4], pip, all_cmd, cmd) == 2)
+		return (free_double(path), 2);
+	if (second(argv[4], pip, all_cmd, cmd, path) == 2)
 		return (free_double(path), free_double(cmd), free(all_cmd), 2);
 	return (free_double(cmd), free_double(path), free(all_cmd), 0);
 }
