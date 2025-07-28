@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:21:41 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/26 17:28:19 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/07/28 16:30:24 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,87 +55,87 @@ char	*valid_command(char *cmd, char **path)
 	return (free(valid_cmd), NULL);
 }
 
-int	first(char *file_in, int pip[2], char *all_cmd, char **cmd, char **path)
+int	first(char *file_in, t_pipex_content content)
 {
 	pid_t	fils;
-	int		file;
 
-	file = open(file_in, O_RDONLY);
-	if (file < 0)
+	content.file_in = open(file_in, O_RDONLY);
+	if (content.file_in < 0)
 		return (perror("Fichier de lecture manquant"), 2);
 	fils = fork();
 	if (fils == 0)
 	{
-		if (dup2(file, 0) == -1 || dup2(pip[1], 1) == -1)
-			return (perror("Erreur dans le dup2"), 2);
-		execve(all_cmd, cmd, NULL);
+		if (dup2(content.file_in, 0) == -1 || dup2(content.pip[1], 1) == -1)
+			return (perror("Erreur dans le dup2"), close(content.file_in),
+				close(content.pip[0]), close(content.pip[1]), 2);
+		execve(content.all_cmd, content.cmd, content.env);
 		perror("Erreur dans l'execution");
-		close(file);
-		close(pip[1]);
-		free(all_cmd);
-		free_double(cmd);
-		free_double(path);
+		close(content.file_in);
+		close(content.pip[1]);
+		free(content.all_cmd);
+		free_double(content.cmd);
+		free_double(content.path);
 		exit(2);
 	}
 	waitpid(fils, NULL, 0);
-	close(file);
-	close(pip[1]);
+	close(content.file_in);
+	close(content.pip[1]);
 	return (1);
 }
 
-int	second(char *file_out, int pip[2], char *all_cmd, char **cmd, char **path)
+int	second(char *file_out, t_pipex_content content)
 {
 	pid_t	fils;
-	int		file;
 
-	file = open(file_out, O_WRONLY | O_TRUNC | O_CREAT, 0777);
-	if (!file)
+	content.file_out = open(file_out, O_WRONLY | O_TRUNC | O_CREAT, 0777);
+	if (!content.file_out)
 		return (perror("Probleme lors de l'ouverture du fichier de sortie"), 2);
 	fils = fork();
 	if (fils == 0)
 	{
-		if (dup2(file, 1) == -1 || dup2(pip[0], 0) == -1)
-			return (perror("Erreur dans le dup2"), 2);
-		execve(all_cmd, cmd, NULL);
+		if (dup2(content.file_out, 1) == -1 || dup2(content.pip[0], 0) == -1)
+			return (perror("Erreur dans le dup2"), close(content.file_out),
+				close(content.pip[0]), 2);
+		execve(content.all_cmd, content.cmd, content.env);
 		perror("Erreur dans l'execution");
-		close(file);
-		close(pip[0]);
-		free(all_cmd);
-		free_double(cmd);
-		free_double(path);
+		close(content.file_out);
+		close(content.pip[0]);
+		free(content.all_cmd);
+		free_double(content.cmd);
+		free_double(content.path);
 		exit(2);
 	}
 	waitpid(fils, NULL, 0);
-	close(file);
-	close(pip[0]);
+	close(content.file_out);
+	close(content.pip[0]);
 	return (1);
 }
 
 int	main(int argc, char **argv, char **env)
 {
-	int		pip[2];
-	char	**cmd;
-	char	*all_cmd;
-	char	**path;
+	t_pipex_content	content;
 
 	if (argc != 5)
 		return (perror("Nombre d'argument incorrect !"), 2);
-	path = get_path(env);
-	if (!path)
+	content.path = get_path(env);
+	content.env = env;
+	if (!content.path)
 		return (perror("Erreur path"), 2);
-	pipe(pip);
-	cmd = NULL;
-	all_cmd = NULL;
-	if (make_storage(&cmd, argv[2], &all_cmd, path) == 0)
-		return (free_double(path), 2);
-	if (first(argv[1], pip, all_cmd, cmd, path) == 2)
-		return (free_double(path), free_double(cmd), free(all_cmd), 2);
-	(free_double(cmd), free(all_cmd));
-	cmd = NULL;
-	all_cmd = NULL;
-	if (make_storage(&cmd, argv[3], &all_cmd, path) == 0)
-		return (free_double(path), 2);
-	if (second(argv[4], pip, all_cmd, cmd, path) == 2)
-		return (free_double(path), free_double(cmd), free(all_cmd), 2);
-	return (free_double(cmd), free_double(path), free(all_cmd), 0);
+	(pipe(content.pip), content.cmd = NULL, content.all_cmd = NULL);
+	if (make_storage(&content.cmd, argv[2],
+			&content.all_cmd, content.path) == 0)
+		return (free_double(content.path), 2);
+	if (first(argv[1], content) == 2)
+		return (free_double(content.path), free_double(content.cmd),
+			free(content.all_cmd), 2);
+	(free_double(content.cmd), free(content.all_cmd), content.cmd = NULL,
+		content.all_cmd = NULL);
+	if (make_storage(&content.cmd, argv[3], &content.all_cmd,
+			content.path) == 0)
+		return (free_double(content.path), 2);
+	if (second(argv[4], content) == 2)
+		return (free_double(content.path), free_double(content.cmd),
+			free(content.all_cmd), 2);
+	return (free_double(content.cmd), free_double(content.path),
+		free(content.all_cmd), 0);
 }

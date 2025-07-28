@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:28:14 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/26 17:27:32 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/07/28 16:30:01 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,19 @@
 # include	<stdio.h>
 # include	<fcntl.h>
 
+typedef struct pipex_utils
+{
+	int		pip[2];
+	char	**cmd;
+	char	*all_cmd;
+	char	**path;
+	int		file_in;
+	int		file_out;
+	char	**env;
+}					t_pipex_content;
+
 void	free_double(char **tab_str);
 int		make_storage(char ***cmd, char *argv, char **all_cmd, char **path);
+char	*valid_command(char *cmd, char **path);
 
 #endif
