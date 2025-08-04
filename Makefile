@@ -6,7 +6,7 @@
 #    By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/16 15:03:27 by oamairi           #+#    #+#              #
-#    Updated: 2025/07/24 14:50:19 by oamairi          ###   ########.fr        #
+#    Updated: 2025/08/04 18:01:34 by oamairi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ NAME =		pipex
 
 RM = rm -f
 
-CC = gcc
+CC = cc
 
 CFLAGS = -Wall -Wextra -Werror -g3
 
