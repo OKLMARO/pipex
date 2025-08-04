@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:21:41 by oamairi           #+#    #+#             */
-/*   Updated: 2025/07/28 16:30:24 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/08/04 16:08:06 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,10 @@ int	main(int argc, char **argv, char **env)
 {
 	t_pipex_content	content;
 
-	if (argc != 5)
-		return (perror("Nombre d'argument incorrect !"), 2);
+	if (argc != 5 || !*env)
+		return (perror("Nombre d'argument incorrect ou env vide !"), 2);
 	content.path = get_path(env);
 	content.env = env;
-	if (!content.path)
-		return (perror("Erreur path"), 2);
 	(pipe(content.pip), content.cmd = NULL, content.all_cmd = NULL);
 	if (make_storage(&content.cmd, argv[2],
 			&content.all_cmd, content.path) == 0)
