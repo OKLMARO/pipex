@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:21:41 by oamairi           #+#    #+#             */
-/*   Updated: 2025/08/12 13:34:31 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/08/30 18:40:42 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,7 @@ int	main(int argc, char **argv, char **env)
 	content.path = get_path(env);
 	if (!content.path)
 		return (perror("Env error"), 2);
-	(content.env = env, 
-		pipe(content.pip), content.cmd = NULL, content.all_cmd = NULL);
+	(content.env = env, pipe(content.pip), content.cmd = NULL, content.all_cmd = NULL);
 	if (make_storage(&content.cmd, argv[2],
 			&content.all_cmd, content.path) == 0)
 		return (free_double(content.path), 2);
