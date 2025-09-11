@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:21:41 by oamairi           #+#    #+#             */
-/*   Updated: 2025/08/30 18:40:42 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/09/11 13:14:31 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,7 @@ int	main(int argc, char **argv, char **env)
 	content.path = get_path(env);
 	if (!content.path)
 		return (perror("Env error"), 2);
-	(content.env = env, pipe(content.pip), content.cmd = NULL, content.all_cmd = NULL);
-	if (make_storage(&content.cmd, argv[2],
+	if (init_var(&content, env) == 0 && make_storage(&content.cmd, argv[2],
 			&content.all_cmd, content.path) == 0)
 		return (free_double(content.path), 2);
 	fils[0] = fork();
@@ -123,8 +122,7 @@ int	main(int argc, char **argv, char **env)
 	fils[1] = fork();
 	if (fils[1] == 0)
 		(close(content.pip[1]), second(argv[4], content));
-	(close(content.pip[0]), close(content.pip[1]), waitpid(fils[0], NULL, 0));
-	waitpid(fils[1], NULL, 0);
+	finish(&content, fils);
 	return (free_double(content.cmd), free_double(content.path),
 		free(content.all_cmd), 0);
 }

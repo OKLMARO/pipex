@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:28:14 by oamairi           #+#    #+#             */
-/*   Updated: 2025/08/30 18:40:00 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/09/11 13:14:26 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,7 @@ typedef struct pipex_utils
 void	free_double(char **tab_str);
 int		make_storage(char ***cmd, char *argv, char **all_cmd, char **path);
 char	*valid_command(char *cmd, char **path);
+int		init_var(t_pipex_content *content, char **env);
+void	finish(t_pipex_content *content, pid_t fils[2]);
 
 #endif
