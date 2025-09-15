@@ -6,7 +6,7 @@
 #    By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/16 15:03:27 by oamairi           #+#    #+#              #
-#    Updated: 2025/08/04 18:01:34 by oamairi          ###   ########.fr        #
+#    Updated: 2025/09/11 15:02:25 by oamairi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ RM = rm -f
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -g3
+CFLAGS = -Wall -Wextra -Werror
 
 LIBFT = libft/libft.a
 PRINTF = ft_printf/libftprintf.a

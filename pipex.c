@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 13:21:41 by oamairi           #+#    #+#             */
-/*   Updated: 2025/09/11 13:14:31 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/09/15 18:11:33 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,46 +56,62 @@ char	*valid_command(char *cmd, char **path)
 	return (free(valid_cmd), NULL);
 }
 
-int	first(char *file_in, t_pipex_content content)
+void	first(char *file_in, t_pipex_content content)
 {
 	content.file_in = open(file_in, O_RDONLY);
 	if (content.file_in < 0)
-		return (perror("Fichier de lecture manquant"), 2);
+	{
+		perror("Fichier de lecture manquant");
+		free(content.all_cmd);
+		free_double(content.cmd);
+		free_double(content.path);
+		exit(2);
+	}
 	if (dup2(content.file_in, 0) == -1 || dup2(content.pip[1], 1) == -1)
-		return (perror("Erreur dans le dup2"), close(content.file_in),
-			close(content.pip[0]), close(content.pip[1]), 2);
-	execve(content.all_cmd, content.cmd, content.env);
-	perror("Erreur dans l'execution");
+	{
+		(perror("Erreur dans le dup2"), free(content.all_cmd));
+		(close(content.file_out), free_double(content.cmd));
+		(close(content.pip[0]), free_double(content.path));
+		exit(2);
+	}
 	close(content.file_in);
 	close(content.pip[1]);
+	if (content.all_cmd)
+		execve(content.all_cmd, content.cmd, content.env);
+	perror("Erreur dans l'execution");
 	free(content.all_cmd);
 	free_double(content.cmd);
 	free_double(content.path);
 	exit(2);
-	close(content.file_in);
-	close(content.pip[1]);
-	return (1);
 }
 
-int	second(char *file_out, t_pipex_content content)
+void	second(char *file_out, t_pipex_content content)
 {
 	content.file_out = open(file_out, O_WRONLY | O_TRUNC | O_CREAT, 0777);
-	if (!content.file_out)
-		return (perror("Probleme lors de l'ouverture du fichier de sortie"), 2);
+	if (content.file_out < 0)
+	{
+		perror("Probleme lors de l'ouverture du fichier de sortie");
+		free(content.all_cmd);
+		free_double(content.cmd);
+		free_double(content.path);
+		exit(2);
+	}
 	if (dup2(content.file_out, 1) == -1 || dup2(content.pip[0], 0) == -1)
-		return (perror("Erreur dans le dup2"), close(content.file_out),
-			close(content.pip[0]), 2);
-	execve(content.all_cmd, content.cmd, content.env);
-	perror("Erreur dans l'execution");
+	{
+		(perror("Erreur dans le dup2"), free(content.all_cmd));
+		(close(content.file_out), free_double(content.cmd));
+		(close(content.pip[0]), free_double(content.path));
+		exit(2);
+	}
 	close(content.file_out);
 	close(content.pip[0]);
+	if (content.all_cmd)
+		execve(content.all_cmd, content.cmd, content.env);
+	perror("Erreur dans l'execution");
 	free(content.all_cmd);
 	free_double(content.cmd);
 	free_double(content.path);
 	exit(2);
-	close(content.file_out);
-	close(content.pip[0]);
-	return (1);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -108,7 +124,7 @@ int	main(int argc, char **argv, char **env)
 	content.path = get_path(env);
 	if (!content.path)
 		return (perror("Env error"), 2);
-	if (init_var(&content, env) == 0 && make_storage(&content.cmd, argv[2],
+	if (init_var(&content, env) == 0 || make_storage(&content.cmd, argv[2],
 			&content.all_cmd, content.path) == 0)
 		return (free_double(content.path), 2);
 	fils[0] = fork();

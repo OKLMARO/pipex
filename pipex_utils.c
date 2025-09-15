@@ -6,7 +6,7 @@
 /*   By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 13:22:49 by oamairi           #+#    #+#             */
-/*   Updated: 2025/09/11 13:14:36 by oamairi          ###   ########.fr       */
+/*   Updated: 2025/09/11 14:59:28 by oamairi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ int	make_storage(char ***cmd, char *argv, char **all_cmd, char **path)
 		return (perror("Malloc crash"), 0);
 	*all_cmd = valid_command(*cmd[0], path);
 	if (!*all_cmd)
-		return (free_double(*cmd),
-			perror("Commande introuvable ou non executable"), 0);
+		return (perror("Commande introuvable ou non executable"), 2);
 	return (1);
 }
 

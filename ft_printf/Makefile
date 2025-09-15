@@ -6,21 +6,22 @@
 #    By: oamairi <oamairi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/05 22:34:10 by oamairi           #+#    #+#              #
-#    Updated: 2025/07/24 14:55:35 by oamairi          ###   ########.fr        #
+#    Updated: 2025/09/11 15:02:42 by oamairi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS =		ft_printf.c ft_putnbr.c \
-			ft_strlen.c ft_putstr.c ft_putchar.c \
+SRCS =		ft_printf.c ft_putnbr.c ft_strlen.c ft_putstr.c ft_putchar.c \
 			ft_strdup.c
 
 OBJS = $(SRCS:.c=.o)
 
 NAME = libftprintf.a
 
+CC = cc
+
 RM = rm -f
 
-CFLAGS = -Wall -Wextra -Werror -g3
+CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
@@ -37,3 +38,5 @@ fclean: clean
 	$(RM) $(NAME)
 
 re: fclean all
+
+.PHONY: all clean fclean re
